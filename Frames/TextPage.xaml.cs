@@ -51,7 +51,7 @@ namespace RobotChanger.Frames
         public void Closing()
         {
             _update = false;
-           // KeyDown -= AdditionalKeys;
+            // KeyDown -= AdditionalKeys;
         }
 
         //public void Reload()
@@ -101,6 +101,7 @@ namespace RobotChanger.Frames
             Output.Opacity = ConfigManager.Config.Opacity;
             Output.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
             Output.AcceptsReturn = true;
+            LoadingPage.DiskRemoved += CloseFile;
         }
 
         private void UpdateCarriage()
@@ -122,16 +123,16 @@ namespace RobotChanger.Frames
                         else
                         {
                             Output.Text += ConfigManager.Config.SpecialSymbol;
-                            Output.CaretIndex = Output.Text.Length-1;
+                            Output.CaretIndex = Output.Text.Length - 1;
                         }
-                            
-                       
+
+
                     }));
 
                     _mutex?.ReleaseMutex();
 
                     Thread.Sleep((int)ConfigManager.Config.DelayUpdateCarriage);
-                    
+
                 }
             }).Start();
         }
@@ -148,20 +149,32 @@ namespace RobotChanger.Frames
         }
         private void SaveFile(object sender, ExecutedRoutedEventArgs e)
         {
+            if (!File.Exists(_filename))
+            {
+                var aw = new AlertWindow("Уведомление", "Фыйл не обнаружен...", "Закрыть", _theme);
+                if (aw.ShowDialog()==false)
+                {
+                    Closing();
+                    Addition.NavigationService.GoBack();
+                    return;
+                }
+            }
+
             if (Output.Text.Length > 0 && Output.Text[Output.Text.Length - 1].ToString() == ConfigManager.Config.SpecialSymbol)
                 Output.Text = Output.Text.Remove(Output.Text.Length - 1);
             File.WriteAllText(_filename, Output.Text);
 
-            var a = new AlertWindow("Уведомление", "Фыйл сохранен.", "Закрыть", _theme);
-            try
+            new AlertWindow("Уведомление", "Фыйл сохранен.", "Закрыть", _theme).Show();
+        }
+        private void CloseFile()
+        {
+            var aw = new AlertWindow("Уведомление", "Фыйл не обнаружен...", "Закрыть", _theme);
+            if (aw.ShowDialog() == false)
             {
-                a.Show();
+                Closing();
+                Addition.NavigationService.GoBack();
+                return;
             }
-            catch (Exception ex)
-            {
-                ex.Message.ToString();
-            }
-           
         }
     }
 }

@@ -17,7 +17,6 @@ namespace RobotChanger.Classes
         private static List<string> _disks = new List<string>();
 
         private static bool _isActive;
-        private static Thread _thread;
 
         public static void StartListening()
         {
@@ -60,10 +59,7 @@ namespace RobotChanger.Classes
                     Thread.Sleep(Delay);
                 }
             }
-            catch (Exception ex)
-            {
-                //Logger.Error(ex);
-            }
+            catch (Exception){}
         }
     }
 }

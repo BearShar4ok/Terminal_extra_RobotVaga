@@ -25,13 +25,15 @@ namespace RobotChanger.Frames
     /// </summary>
     public partial class LoadingPage : Page
     {
+        //Access file on flashcard name
         private const string AccessFileToReadDisk = "vaga.txt";
-        private const string SystemFolder = "System Volume Information";
 
         private Uri imageLink;
         private string _theme;
         private KeyStates _prevkeyState;
         private string _currDisk;
+
+        public static Action DiskRemoved;
 
         //private Dictionary<string, ListBoxItem> _disks = new Dictionary<string, ListBoxItem>();
         public LoadingPage(string theme)
@@ -77,10 +79,12 @@ namespace RobotChanger.Frames
             {
                 try
                 {
-
                     var allFiles = Directory.GetFiles(disk).Select(Path.GetFileName).ToArray();
 
                     if (!allFiles.Contains(AccessFileToReadDisk)) return;
+
+                    if (_currDisk == null)
+                        _currDisk = disk;
 
                     var fullPath = File.ReadAllText(disk + AccessFileToReadDisk);
                     if (Directory.Exists(fullPath))
@@ -88,18 +92,6 @@ namespace RobotChanger.Frames
                         LblInfo.Content = "";
                         LblInfo.Visibility = Visibility.Hidden;
                         var diskName = Path.GetFileNameWithoutExtension(fullPath);
-
-                        //var lbi = new ListBoxItem()
-                        //{
-                        //    DataContext = new BitmapImage(imageLink),
-                        //    Content = diskName,
-                        //    Tag = fullPath,
-                        //    Style = (Style)App.Current.FindResource("ImageText"),
-                        //    Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
-                        //    FontFamily = LblInfo.FontFamily,
-                        //    FontSize = LblInfo.FontSize,
-                        //
-                        //};
                         Thread.Sleep(1000);
                         OpenFolder(fullPath);
                     }
@@ -113,17 +105,16 @@ namespace RobotChanger.Frames
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
             {
-
-
                 if (_currDisk == diskName)
                 {
                     LB.SelectedIndex = 0;
                     _currDisk = null;
                     LB.Items.Clear();
+                    DiskRemoved();
                 }
                 if (LB.Items.Count == 0)
                 {
-                    LblInfo.Content = "Доступных дисков нет...";
+                    LblInfo.Content = "Доступных дисков нет... Идет поиск...";
                     LblInfo.Visibility = Visibility.Visible;
                 }
             }));
