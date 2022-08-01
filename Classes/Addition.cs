@@ -30,7 +30,7 @@ namespace RobotChanger.Classes
         public const string Assets = "Assets";
 
         // Dubug Mode
-        public const bool IsDebugMod = true;
+        public const bool IsDebugMod = false;
 
         // NavigationService
         public static NavigationService NavigationService { get; } = (Application.Current.MainWindow as MainWindow)?.Frame.NavigationService;

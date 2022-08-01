@@ -18,7 +18,7 @@
                     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 </Style>
             </ScrollViewer.Style>
-            <TextBox x:Name="Output" Focusable="True" TextWrapping="Wrap" Background="Transparent" BorderThickness="0">
+            <TextBox x:Name="Output" Focusable="True" Cursor="None" TextWrapping="Wrap" Background="Transparent" BorderThickness="0">
                 <TextBox.Style>
                     <Style TargetType="TextBox">
                         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
